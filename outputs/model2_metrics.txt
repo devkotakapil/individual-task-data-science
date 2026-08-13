@@ -1,0 +1,12 @@
+Model 2: Customer Segmentation (K-Means, k=5)
+Silhouette Score: 0.329
+Inertia: 373.17
+
+Cluster profiles (mean values):
+          Age  Annual Income (k$)  Spending Score (1-100)  Count
+Cluster                                                         
+0        25.3                25.8                    62.0    209
+1        67.8               108.4                     4.4    118
+2        33.0                41.4                    53.5    300
+3        38.8                61.3                    41.9    196
+4        46.8                85.7                    26.0    161

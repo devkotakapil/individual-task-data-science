@@ -1,0 +1,14 @@
+Model 1: Sales Forecasting (Random Forest Regressor)
+RMSE: 9129.04
+MAE: 6967.16
+MAPE: 33.09%
+R2: 0.122
+
+Feature importances:
+Month              0.591293
+Sales_Lag2         0.124956
+Sales_RollMean3    0.119911
+Sales_Lag1         0.076921
+Year               0.058126
+Quarter            0.018357
+Category_enc       0.010437
