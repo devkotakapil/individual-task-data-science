@@ -1,0 +1,113 @@
+====================================================================== 
+Q1a. DIAGNOSIS OF THE ORIGINAL TASK 1 SPLIT
+======================================================================
+Rows: 138 | train 110 | test 28
+Test categories: ['Technology']
+Test period:  2016-09 to 2018-12
+Train period: 2015-03 to 2018-12
+Training rows dated INSIDE the test window: 56 (51% of training data)
+Original-split metrics (should match Task 1): MAPE 32.9% | MAE 6,942 | R2 0.127
+
+====================================================================== 
+Q1b. CORRECTED EVALUATION
+======================================================================
+Hold-out: train 2015-03..2018-02 (108 rows), test 2018-03..2018-12 (30 rows, all categories)
+                                model      MAE  MAPE_%     R2
+                        Random Forest 6556.231  27.942  0.180
+                   Naive (last month) 8084.396  37.213 -0.320
+Seasonal naive (same month last year) 6209.240  28.015  0.246
+
+Rolling-origin CV (expanding window):
+ fold  train_rows      test_window  RF_MAPE_%  SeasonalNaive_MAPE_%
+    1          66 2017-01..2017-06       32.1                  36.7
+    2          84 2017-07..2017-12       24.3                  29.0
+    3         102 2018-01..2018-06       36.6                  37.6
+    4         120 2018-07..2018-12       26.6                  27.5
+RF MAPE mean +/- sd: 29.9 +/- 5.5%
+
+====================================================================== 
+Q1c. MODEL 2 STABILITY (bootstrap, Adjusted Rand Index)
+======================================================================
+k=2: ARI 0.980 +/- 0.020
+k=3: ARI 0.955 +/- 0.043
+k=4: ARI 0.917 +/- 0.055
+k=5: ARI 0.680 +/- 0.155
+k=6: ARI 0.658 +/- 0.161
+
+====================================================================== 
+Q2. LEARNING CURVES
+======================================================================
+Model 1  train rows  18: train MAPE  13.0% | test MAPE  34.1%
+Model 1  train rows  27: train MAPE  11.5% | test MAPE  44.8%
+Model 1  train rows  36: train MAPE  13.5% | test MAPE  29.2%
+Model 1  train rows  45: train MAPE  14.3% | test MAPE  30.6%
+Model 1  train rows  54: train MAPE  13.6% | test MAPE  30.0%
+Model 1  train rows  63: train MAPE  13.1% | test MAPE  29.8%
+Model 1  train rows  72: train MAPE  12.9% | test MAPE  29.0%
+Model 1  train rows  81: train MAPE  12.5% | test MAPE  31.0%
+Model 1  train rows  90: train MAPE  13.0% | test MAPE  31.0%
+Model 1  train rows  99: train MAPE  12.5% | test MAPE  31.3%
+Seasonal-naive test MAPE on same window: 32.6%
+Model 2  n=  98: ARI 0.562 +/- 0.118 | silhouette 0.337
+Model 2  n= 196: ARI 0.555 +/- 0.095 | silhouette 0.354
+Model 2  n= 295: ARI 0.582 +/- 0.138 | silhouette 0.372
+Model 2  n= 492: ARI 0.625 +/- 0.143 | silhouette 0.344
+Model 2  n= 688: ARI 0.616 +/- 0.135 | silhouette 0.332
+Model 2  n= 984: ARI 0.659 +/- 0.168 | silhouette 0.330
+
+====================================================================== 
+Q3. FAIRNESS AUDIT (Fairlearn)
+======================================================================
+Targeted clusters (mean spending score above average): [0, 2]
+
+Selection rate by AgeGroup (Task 1 model, uses Age):
+          selection_rate      n
+AgeGroup                       
+18-29              0.991  229.0
+30-44              0.535  527.0
+45-59              0.000  127.0
+60+                0.000  101.0
+Demographic parity difference: 0.991 | ratio: 0.000
+
+Selection rate by Gender (Task 1 model, uses Age):
+        selection_rate      n
+Gender                       
+F                0.515  511.0
+M                0.522  471.0
+Demographic parity difference: 0.008 | ratio: 0.985
+
+Cluster composition by age group (row %):
+AgeGroup  18-29  30-44  45-59   60+
+Cluster                            
+0          83.3   16.7    0.0   0.0
+1           0.0    0.0   15.3  84.7
+2          17.7   82.3    0.0   0.0
+3           1.0   94.4    4.6   0.0
+4           0.0   37.3   62.1   0.6
+
+MITIGATION: K-Means without Age
+Silhouette without Age: 0.361 (with Age: 0.329)
+Selection rate by AgeGroup (no Age): {'18-29': 0.983, '30-44': 0.539, '45-59': 0.0, '60+': 0.0}
+Demographic parity difference: 0.983 | ratio: 0.000
+Selection rate by Gender (no Age): {'F': 0.521, 'M': 0.516}
+Demographic parity difference: 0.005 | ratio: 0.991
+
+Proxy check -- correlation of Age with the remaining features:
+Age                       1.000
+Annual Income (k$)        0.924
+Spending Score (1-100)   -0.836
+
+Summary:
+      model attribute  DP_difference  DP_ratio
+   With Age  AgeGroup          0.991     0.000
+   With Age    Gender          0.008     0.985
+Without Age  AgeGroup          0.983     0.000
+Without Age    Gender          0.005     0.991
+
+Model 1 hold-out error by Category (performance disparity):
+                    MAE  MAPE_%     n
+Category                             
+Furniture        4909.1    27.2  10.0
+Office Supplies  5375.2    21.7  10.0
+Technology       9384.4    34.9  10.0
+Largest MAPE gap between categories: 13.2 pp
