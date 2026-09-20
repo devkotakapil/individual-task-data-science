@@ -1,0 +1,15 @@
+# Datasets (download from Kaggle, see README)
+data/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+.ipynb_checkpoints/
+
+# Editors / OS
+.vscode/
+tempCodeRunnerFile.py
+.DS_Store
+Thumbs.db
